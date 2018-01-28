@@ -43,6 +43,7 @@ try {
 
         <h3><a href='./'><img src='<?php echo $logo; ?>' height='256'></a><br/><br/> <?php echo $faucetSubtitle; ?></h3>
 
+<p><a href="http://www.photoncc.com/" target="_blank">Photon Coin Information</a> / <a href="https://github.com/photonproject/photon/releases" target="_blank">Photon Wallet</a> / <a href="https://www.cryptopia.co.nz/Register?referrer=vxdhost" target="Blank">Exchange for FIAT</a></p>
 
         <fieldset>
 
