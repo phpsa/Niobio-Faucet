@@ -134,7 +134,7 @@ if ($recaptcha->set()) {
 
        $query = "INSERT INTO `payouts` (`payout_amount`,`ip_address`,`payout_address`,`payment_id`,`timestamp`) VALUES ('$aleatorio','$direccionIP','$wallet','$paymentID',NOW());";
        $link->query($query);
-       $query = "update `wallet` set `pending` = `pending` + aleatorio";
+       $query = "update `wallet` set `pending` = `pending` + $aleatorio";
        $link->query($query);
         //Get our balance:::
     
