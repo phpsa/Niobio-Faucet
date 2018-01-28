@@ -47,7 +47,7 @@ try {
         <fieldset>
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-            
+            <center><a href="http://freedoge.co.in/?r=1528473" target="_blank"><img src="http://static1.freedoge.co.in/banners/468x60-3.png" /></a></center><br />
 <!-- Adblock -->
 <ins class="adsbygoogle"
      style="display:block"
@@ -170,6 +170,8 @@ try {
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
                     <br/>
                     <div class="g-recaptcha" data-sitekey="6LdQ6UIUAAAAADh-64Qbv-F8UZl_WiAJ-y4rWgoY"></div>
+
+                    <center><a href="https://freebitco.in/?r=10148588" target="_blank"><img src="https://static1.freebitco.in/banners/468x60-3.png" /></a></center><br />
 
                     <center><input id="submt" disabled="disabled" type='submit' value='Gimme by Photons !!!'></center>
                     <br>
