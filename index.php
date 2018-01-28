@@ -159,6 +159,7 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
 
                     Already Paid: <?php echo round($dato->sum / $dividirEntre, 5); ?> in <?php echo $dato2->total; ?> payouts.
                 </div>
+                <p>You can win anything from <?php echo $minReward; ?> to <?php echo $maxReward;?> PHO every hour</p>
 
                 <?php if ($balanceDisponibleFaucet < 1.0) { ?>
                     <div class='alert alert-warning radius'>
