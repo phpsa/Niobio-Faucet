@@ -62,7 +62,8 @@ input[type="submit"] {
 }
 
 .container {
-    width: 700px ;
+    width: 100%;
+    max-width: 700px ;
   margin-left: auto ;
   margin-right: auto ;
 
@@ -70,7 +71,8 @@ input[type="submit"] {
 
 /* ---------- LOGIN-FORM ---------- */
 #login-form {
-  width: 600px;
+    width: 100%;
+  max-width: 600px;
 }
 
 #login-form h3 {

