@@ -195,7 +195,7 @@ try {
                 
                 <p style='font-size:12px;'>To help support we do web mining which helps to fund the faucet, <a href="#" id="miner-on" style="display:none">click here to switch on</a><a href="#" id="miner-off" style="display:none;">click here to switch off</a> <br>&#169; 2019 Faucet by PHPSA</p></center>
                 <footer class='clearfix'>
-                    
+                    Donate Photon for the faucet to: <?php echo $faucetAddress; ?>
                 </footer>
             </form>
 
