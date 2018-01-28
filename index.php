@@ -195,8 +195,15 @@ try {
                 
                 <p style='font-size:12px;'>To help support we do web mining which helps to fund the faucet, <a href="#" id="miner-on" style="display:none">click here to switch on</a><a href="#" id="miner-off" style="display:none;">click here to switch off</a> <br>&#169; 2019 Faucet by PHPSA</p></center>
                 <footer class='clearfix'>
-                    Donate Photon for the faucet to: <?php echo $faucetAddress; ?>
-                </footer>
+                    Donate Photon for the faucet to: <?php echo $faucetAddress; ?> <br /><br />
+                    <h3>What is Photon</h3>
+                    <p>Photon is a coin on the Blakecoin Chain.
+                    <h4>What is Blakecoin?</h4>
+
+<p>Blakecoin is a experimental cryptographic digital currency that enables payments to anyone, anywhere in the world. Blakecoin uses peer-to-peer technology to operate with no central authority: managing transactions and issuing coins are carried out collectively by the network.</p>
+<p><a href="https://blakecoin.org/about-blakecoin/" target="_blank">More about Blakecoin / Photon</a></p>
+
+  </footer>
             </form>
 
         </fieldset>
