@@ -7,11 +7,41 @@ $link = new PDO('mysql:host=' . $hostDB . ';dbname=' . $database, $userDB, $pass
 
 function randomize($min, $max)
 {
-    $range = $max - $min;
-    $num = $min + $range * mt_rand(0, 32767) / 32767;
 
-    return round($num, 3);
+    $onein10K = rand(0,10000);
+    $prize = $min;
+
+    //$jackpot
+    if($onein10K == 10000){
+       return $max;
+    }
+
+    else if($onein10K >= 9998){
+        $prize = $max * 0.10;
+    }
+
+    else if($onein10K >= 9994){
+        $prize = $max * 0.01;
+    }
+
+    else if($onein10K >= 9986 ){
+        $prize = $max * 0.001;
+    }
+
+    else if($onein10K >= 9886){
+        $prize = $max * 0.1;
+    }
+    if($prize < $min){
+        $prize = $min;
+    }
+
+    $prize = $prize + (mt_rand(0, 32767) / 32767);
+
+    return round($prize, 5);
 }
+
+
+
 
 //Instantiate the Recaptcha class as $recaptcha
 $recaptcha = new Recaptcha($keys);
@@ -24,7 +54,7 @@ if ($recaptcha->set()) {
         $direccionIP = $_SERVER['REMOTE_ADDR'];
 
 
-        if (empty($wallet) OR (strlen($wallet) < 95)) {
+        if (empty($wallet) OR (strlen($wallet) < 34)) {
             header('Location: ./?msg=wallet');
             exit();
         }
@@ -44,10 +74,12 @@ if ($recaptcha->set()) {
         $clave = array_search($wallet, $clearedAddresses);
 
         if (empty($clave)) {
-            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL ' . $rewardEvery . ' HOUR AND ( `ip_address` = '$direccionIP' OR `payout_address` = '$wallet')";
+            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL " . $rewardEvery . " HOUR AND ( `ip_address` = '$direccionIP' OR `payout_address` = '$wallet')";
 			} else {
-            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL ' . $rewardEvery . ' HOUR AND ( `ip_address` = '$direccionIP' OR `payment_id` = '$paymentidPost')";
-			}
+            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL " . $rewardEvery . " HOUR AND ( `ip_address` = '$direccionIP' OR `payment_id` = '$paymentidPost')";
+            }
+            
+  
 
         $resultCheck = $link->query($queryCheck);
         if ($resultCheck->rowCount()) {
@@ -55,27 +87,34 @@ if ($recaptcha->set()) {
             exit();
         }
 
-        $bitcoin = new jsonRPCClient('http://127.0.0.1:8070/json_rpc');
-        $balance = $bitcoin->getbalance();
-        $balanceDisponible = $balance['available_balance'];
-        $transactionFee = 100000000;
-        $dividirEntre = 1000000000000;
-        $hasta = number_format(round($balanceDisponible / $dividirEntre, 12), 2, '.', '');
+        $query = "SELECT * FROM `wallet`";
+        $result = $link->query($query,  PDO::FETCH_ASSOC);
+        $balance = $result->fetchObject();
+        $balanceDisponible = $balance->balance;
+        $lockedBalance = $balance->pending;
+        $dividirEntre = 1;
+        $hasta = ($balanceDisponible + $lockedBalance) / $dividirEntre;
+
+
 
         if ($hasta > $maxReward) {
             $hasta = $maxReward;
         }
-        if ($hasta < ((float) $minReward + 0.1)) {
+        if ($hasta < ((float) $minReward)) {
             header('Location: ./?msg=dry');
             exit();
         }
 
         $aleatorio = randomize($minReward, $hasta);
 
-        $cantidadEnviar = ($aleatorio * $dividirEntre) - $transactionFee;
+        if($hasta < $aleatorio){
+            $aleatorio = $hasta;
+        }
+
+        
 
 
-        $destination = array('amount' => $cantidadEnviar, 'address' => $wallet);
+      /*  $destination = array('amount' => $cantidadEnviar, 'address' => $wallet);
         $date = new DateTime();
         $timestampUnix = $date->getTimestamp() + 5;
         $peticion = array(
@@ -91,15 +130,24 @@ if ($recaptcha->set()) {
         if ($transferencia == 'Bad address') {
             header('Location: ./?msg=wallet');
             exit();
-        }
+        }*/
 
-        if (array_key_exists('tx_hash', $transferencia)) {
-            $query = "INSERT INTO `payouts` (`payout_amount`,`ip_address`,`payout_address`,`payment_id`,`timestamp`) VALUES ('$cantidadEnviar','$direccionIP','$wallet','$paymentID',NOW());";
+       $query = "INSERT INTO `payouts` (`payout_amount`,`ip_address`,`payout_address`,`payment_id`,`timestamp`) VALUES ('$aleatorio','$direccionIP','$wallet','$paymentID',NOW());";
+       $link->query($query);
+       $query = "update `wallet` set `pending` = `pending` + aleatorio";
+       $link->query($query);
+        //Get our balance:::
+    
+        $query = "SELECT sum(payout_amount) as total  FROM `payouts` where `payout_address` = '" . $wallet . "' and paid = '0'";
+      
+        $result = $link->query($query,  PDO::FETCH_ASSOC);
+        $pending = $result->fetchObject();
 
-            $link->exec($query);
-            header('Location: ./?msg=success&txid=' . $transferencia['tx_hash'] . '&amount=' . $aleatorio);
-            exit();
-        }
+
+        $link->exec($query);
+        header('Location: ./?msg=success&amount=' . $aleatorio . '&pending=' . round($pending->total,5));
+        exit();
+        
 
 
     } else {

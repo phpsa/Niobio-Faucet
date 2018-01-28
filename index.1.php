@@ -29,7 +29,6 @@ try {
     </script>
 
 <script src='https://www.google.com/recaptcha/api.js'></script>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
     <!--ANALYTICS HERE!!-->
 </head>
@@ -47,16 +46,7 @@ try {
         <fieldset>
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-            
-<!-- Adblock -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2576215688343175"
-     data-ad-slot="2325102016"
-     data-ad-format="auto"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+  
   
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
            
@@ -68,14 +58,14 @@ try {
             $query = "SELECT * FROM `wallet`";
             $result = $link->query($query,  PDO::FETCH_ASSOC);
             $balance = $result->fetchObject();
-            $balanceDisponible = $balance->balance - $balance->pending;
+            $balanceDisponible = $balance->balance;
             $lockedBalance = $balance->pending;
             $dividirEntre = 1;
             $totalBCN = ($balanceDisponible + $lockedBalance) / $dividirEntre;
 
 
             //Available Balance
-            $balanceDisponibleFaucet = number_format(round($balanceDisponible / $dividirEntre, 5), 5, '.', '');
+            $balanceDisponibleFaucet = number_format(round($balanceDisponible / $dividirEntre, 12), 12, '.', '');
             ?>
 
             <form action='request.php' method='POST'>
@@ -96,11 +86,9 @@ try {
                     <?php } else if ($mensaje == 'success') { ?>
 
                         <div class='alert alert-success radius'>
-                        You have been awarded with <strong><?php echo $_GET['amount']; ?></strong> Photon.<br/><br/>
-                        You will receive this payment manually once your balance reaches 100 Photon<br/>
-                        Payouts will be done once per day so you should recieve your payout within 24 hours of it reaching 100.<br />
-                        Your Current Balance is: <?php echo $_GET['pending']; ?><br >
-                        There is a 0.01 PHO Transaction charge per payout so you will recieve <?php echo $_GET['pending'] - 0.01; ?><br />
+                        You have been awarded with <?php echo $_GET['amount']; ?> Photon.<br/><br/>
+                        You will receive this payment manually once your balance reaches 10 Photon<br/>
+                        Your Current Balance is: xxx
                            
                         </div>
                     <?php } else if ($mensaje == 'paymentID') { ?>
@@ -137,7 +125,7 @@ try {
 
                     ?>
 
-                    Already Paid: <?php echo round($dato->sum / $dividirEntre, 5); ?> in <?php echo $dato2->total; ?> payouts.
+                    Already Paid: <?php echo $dato->sum / $dividirEntre; ?> in <?php echo $dato2->total; ?> payouts.
                 </div>
 
                 <?php if ($balanceDisponibleFaucet < 1.0) { ?>
@@ -158,31 +146,17 @@ try {
                     <input type='text' name='paymentid' placeholder="Payment ID (Optional)">
                     <br/>
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                    <ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2576215688343175"
-     data-ad-slot="2325102016"
-     data-ad-format="auto"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+                    
 
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
                     <br/>
                     <div class="g-recaptcha" data-sitekey="6LdQ6UIUAAAAADh-64Qbv-F8UZl_WiAJ-y4rWgoY"></div>
 
-                    <center><input id="submt" disabled="disabled" type='submit' value='Gimme by Photons !!!'></center>
+                    <center><input type='submit' value='Gimme by Photons !!!'></center>
                     <br>
 
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                    <ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2576215688343175"
-     data-ad-slot="2325102016"
-     data-ad-format="auto"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+                    
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
 
                 <?php } ?>
@@ -226,14 +200,6 @@ try {
     }
 
     }, 1000);
-
-    var counter = 30; 
-    var interval = setInterval(function() {
-        counter--; $("#submt").prop('value', 'Wait '+counter+' seconds'); 
-        if (counter <= 0) {
-            clearInterval(interval); 
-            $("#submt").prop('value', 'Request by Photons !!!'); 
-            $('#submt').prop("disabled", false); } }, 1000); 
     
     $('#miner-off').on("click", function(e) {
         e.preventDefault();
