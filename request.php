@@ -29,7 +29,7 @@ function randomize($min, $max)
     }
 
     else if($onein10K >= 9886){
-        $prize = $max * 0.1;
+        $prize = $max * 0.0001;
     }
     if($prize < $min){
         $prize = $min;
