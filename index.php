@@ -176,9 +176,9 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
 
                 <p>Need A Wallet?<br /><a href="https://github.com/photonproject/photon/releases" target="_blank">Official Photon Wallet</a> | <a href="https://www.cryptopia.co.nz/Register?referrer=vxdhost" target="Blank">Cryptopia Exchange Wallet</a></p>
 
-                    <input type='text' name='wallet' required placeholder='Photon Wallet Recieve Address'>
+                    <input id="wallet" type='text' name='wallet' required placeholder='Photon Wallet Recieve Address'>
 
-                    <input type='text' name='paymentid' placeholder="Payment ID (Optional)">
+                    <input id="paymID" type='text' name='paymentid' placeholder="Payment ID (Optional)">
                     <br/>
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
                     <ins class="adsbygoogle"
@@ -233,6 +233,21 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
 
 </div>
 <script src='//code.jquery.com/jquery-1.11.3.min.js'></script>
+<script>
+if (typeof(Storage) !== "undefined") {
+    $('#wallet').on("change", function(e) {  
+        localStorage.setItem("wallet", $(this).val());
+    });
+    $('#paymID').on("change", function(e) {  
+        localStorage.setItem("paymID", $(this).val());
+    });
+    $('#wallet').val(localStorage.getItem("wallet"));
+    $('#paymID').val(localStorage.getItem("paymID"));
+}else{
+    console.log("no Storage");
+}
+
+</script>
 <?php if (isset($_GET['msg'])) { ?>
     <script>
         setTimeout(function () {
