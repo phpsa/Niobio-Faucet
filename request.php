@@ -3,8 +3,7 @@ require_once 'classes/recaptcha.php';
 require_once 'classes/jsonRPCClient.php';
 require_once 'config.php';
 
-$link = new PDO('mysql:host=' . $hostDB . ';dbname=' . $database, $userDB, $passwordDB);
-
+$link = new PDO('mysql:host=' . $config['db']['host'] . ';dbname=' . $config['db']['database'], $config['db']['user'], $config['db']['password']);
 function randomize($min, $max)
 {
 
@@ -17,34 +16,34 @@ function randomize($min, $max)
     }
 
     else if($onein10K >= 9998){
-        $prize = $max * 0.10;
+        $prize = $max * 0.8;
     }
 
     else if($onein10K >= 9994){
-        $prize = $max * 0.01;
+        $prize = $max * 0.6;
     }
 
     else if($onein10K >= 9986 ){
-        $prize = $max * 0.001;
+        $prize = $max * 0.4;
     }
 
     else if($onein10K >= 9886){
-        $prize = $max * 0.0001;
+        $prize = $max * 0.2;
     }
     if($prize < $min){
         $prize = $min;
     }
 
-    $prize = $prize + (mt_rand(0, 32767) / 32767);
+    $prize = $prize;;
 
-    return round($prize, 5);
+    return array('number' => $onein10K, 'prize' => round($prize, 10));
 }
 
 
 
 
 //Instantiate the Recaptcha class as $recaptcha
-$recaptcha = new Recaptcha($keys);
+$recaptcha = new Recaptcha($config['recaptcha']);
 if ($recaptcha->set()) {
     if ($recaptcha->verify($_POST['g-recaptcha-response'])) {
         //Checking address and payment ID characters
@@ -54,7 +53,7 @@ if ($recaptcha->set()) {
         $direccionIP = $_SERVER['REMOTE_ADDR'];
 
 
-        if (empty($wallet) OR (strlen($wallet) < 34)) {
+        if (empty($wallet) OR (strlen($wallet) < 97)) {
             header('Location: ./?msg=wallet');
             exit();
         }
@@ -71,12 +70,12 @@ if ($recaptcha->set()) {
         }
 
         //Looking for cleared address or not
-        $clave = array_search($wallet, $clearedAddresses);
+        $clave = array_search($wallet, $config['clearedAddresses']);
 
         if (empty($clave)) {
-            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL " . $rewardEvery . " HOUR AND ( `ip_address` = '$direccionIP' OR `payout_address` = '$wallet')";
+            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL " . $config['rewardEvery'] . " HOUR AND ( `ip_address` = '$direccionIP' OR `payout_address` = '$wallet')";
 			} else {
-            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL " . $rewardEvery . " HOUR AND ( `ip_address` = '$direccionIP' OR `payment_id` = '$paymentidPost')";
+            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL " . $config['rewardEvery'] . " HOUR AND ( `ip_address` = '$direccionIP' OR `payment_id` = '$paymentidPost')";
             }
             
   
@@ -97,44 +96,25 @@ if ($recaptcha->set()) {
 
 
 
-        if ($hasta > $maxReward) {
-            $hasta = $maxReward;
+        if ($hasta > $config['maxReward']) {
+            $hasta = $config['maxReward'];
         }
-        if ($hasta < ((float) $minReward)) {
+        if ($hasta < ((float) $config['minReward'])) {
             header('Location: ./?msg=dry');
             exit();
         }
 
-        $aleatorio = randomize($minReward, $hasta);
+        $aleatorio = randomize($config['minReward'], $hasta);
 
-        if($hasta < $aleatorio){
-            $aleatorio = $hasta;
+        if($hasta < $aleatorio['prize']){
+            $aleatorio['prize'] = $hasta;
         }
 
         
 
-
-      /*  $destination = array('amount' => $cantidadEnviar, 'address' => $wallet);
-        $date = new DateTime();
-        $timestampUnix = $date->getTimestamp() + 5;
-        $peticion = array(
-            'destinations' => $destination,
-            'payment_id' => $paymentID,
-            'fee' => $transactionFee,
-            'mixin' => 1, // need to increase mixin later
-            'unlock_time' => 0
-        );
-
-        $transferencia = $bitcoin->transfer($peticion);
-
-        if ($transferencia == 'Bad address') {
-            header('Location: ./?msg=wallet');
-            exit();
-        }*/
-
-       $query = "INSERT INTO `payouts` (`payout_amount`,`ip_address`,`payout_address`,`payment_id`,`timestamp`) VALUES ('$aleatorio','$direccionIP','$wallet','$paymentID',NOW());";
+       $query = "INSERT INTO `payouts` (`payout_amount`,`ip_address`,`payout_address`,`payment_id`,`timestamp`) VALUES ('" . $aleatorio['prize'] . "','$direccionIP','$wallet','$paymentID',NOW());";
        $link->query($query);
-       $query = "update `wallet` set `pending` = `pending` + $aleatorio";
+       $query = "update `wallet` set `pending` = `pending` + " . $aleatorio['prize'];
        $link->query($query);
         //Get our balance:::
     
@@ -145,7 +125,7 @@ if ($recaptcha->set()) {
 
 
         $link->exec($query);
-        header('Location: ./?msg=success&amount=' . $aleatorio . '&pending=' . round($pending->total,5));
+        header('Location: ./?msg=success&draw=' . $aleatorio['number'] . '&amount=' . $aleatorio['prize'] . '&pending=' . round($pending->total,10));
         exit();
         
 

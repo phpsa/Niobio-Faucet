@@ -1,10 +1,9 @@
 <?php
-
 require_once 'classes/recaptcha.php';
 require_once 'config.php';
 
 try {
-    $link = new PDO('mysql:host=' . $hostDB . ';dbname=' . $database, $userDB, $passwordDB);
+    $link = new PDO('mysql:host=' . $config['db']['host'] . ';dbname=' . $config['db']['database'], $config['db']['user'], $config['db']['password']);
 } catch (PDOException $e) {
     echo 'Connection failed: ' . $e->getMessage();
 }
@@ -12,7 +11,7 @@ try {
 <html>
 <head>
     <meta charset='UTF-8'>
-    <title><?php echo $faucetTitle; ?></title>
+    <title><?php echo $config['title']; ?></title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='shortcut icon' href='images/favicon.ico'>
     <link rel='icon' type='image/icon' href='images/favicon.ico'>
@@ -29,27 +28,10 @@ try {
     </script>
 
 <script src='https://www.google.com/recaptcha/api.js'></script>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
-<?php
-if(!file_exists('images/phobtc.txt') || time() - filemtime('images/phobtc.txt') >= 60*15){
-    file_put_contents('images/phobtc.txt',file_get_contents("https://www.cryptopia.co.nz/api/GetMarket/PHO_BTC"));
-}
-$pair = json_decode(file_get_contents('images/phobtc.txt'));
-$exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
-
-?>
 
     <!--ANALYTICS HERE!!-->
     <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-113151286-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-113151286-1');
-</script>
 
 </head>
 
@@ -60,23 +42,15 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
     <div id='login-form'>
 
 
-        <h3><a href='./'><img src='<?php echo $logo; ?>' height='256'></a><br/><br/> <?php echo $faucetSubtitle; ?></h3>
-<?php if($exch_rate): ?><p><center><strong>1 PHO = <?php echo $exch_rate;?> BTC<?php endif; ?>
-<p><a href="http://www.photoncc.com/" target="_blank">Photon Coin Information</a> | <a href="https://github.com/photonproject/photon/releases" target="_blank">Photon Wallet</a> | <a href="https://www.cryptopia.co.nz/Register?referrer=vxdhost" target="Blank">Exchange for FIAT</a></p>
+        <h3><a href='./'><img src='<?php echo $config['logo']; ?>' ></a><br/><br/> <?php echo $config['subtitle']; ?></h3>
+
+<p><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-Wallet" target="_blank">SpesCoin Wallet</a> </p>
 
         <fieldset>
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
             <center><a href="http://freedoge.co.in/?r=1528473" target="_blank"><img class="img-responsive" src="http://static1.freedoge.co.in/banners/468x60-3.png" /></a></center><br />
-<!-- Adblock -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2576215688343175"
-     data-ad-slot="2325102016"
-     data-ad-format="auto"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+
   
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
            
@@ -116,11 +90,10 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
                     <?php } else if ($mensaje == 'success') { ?>
 
                         <div class='alert alert-success radius'>
-                        You have been awarded with <strong><?php echo $_GET['amount']; ?></strong> Photon.<br/><br/>
-                        You will receive this payment manually once your balance reaches 100 Photon<br/>
-                        Payouts will be done once per day so you should recieve your payout within 24 hours of it reaching 100.<br />
+                        You spun <b><?php echo $_GET['draw'];?></b> and have been awarded with <strong><?php echo $_GET['amount']; ?></strong> SpesCoin.<br/><br/>
+                        We are currently doing payments manually once per day, so you should recieve your payout within 24 hours.<br />
                         Your Current Balance is: <?php echo $_GET['pending']; ?><br >
-                        There is a 0.01 PHO Transaction charge per payout so you will recieve <?php echo $_GET['pending'] - 0.01; ?><br />
+                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round($_GET['pending'] - 0.0001, 10); ?><br />
                            
                         </div>
                     <?php } else if ($mensaje == 'paymentID') { ?>
@@ -142,7 +115,7 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
 
                 <?php } ?>
                 <div class='alert alert-info radius'>
-                    Available Balance: <?php echo $balanceDisponibleFaucet ?> Photon.<br>
+                    Available Balance: <?php echo $balanceDisponibleFaucet ?> SpesCoin.<br>
                     <?php
 
                     $query = 'select sum(`payout_amount`) as sum from payouts';
@@ -157,11 +130,11 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
 
                     ?>
 
-                    Already Paid: <?php echo round($dato->sum / $dividirEntre, 5); ?> in <?php echo $dato2->total; ?> payouts.
+                    Already Paid: <?php echo round($dato->sum / $dividirEntre, 10); ?> in <?php echo $dato2->total; ?> payouts.
                 </div>
-                <p>You can win anything from <?php echo $minReward; ?> to <?php echo $maxReward;?> PHO every hour</p>
+                <p>You can win anything from <?php echo $config['minReward']; ?> to <?php echo $config['maxReward'];?> SPES every hour</p>
 
-                <?php if ($balanceDisponibleFaucet < 1.0) { ?>
+                <?php if ($balanceDisponibleFaucet < 10) { ?>
                     <div class='alert alert-warning radius'>
                     Faucet is empty or balance is lower than reward. <br> Wait for a reload or donation.
                     </div>
@@ -173,57 +146,100 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
 
                     die('DB Error' . mysql_error());
                 } else { ?>
+                <h3>What is SpesCoin</h3>
+                    <p>SpesCoin endeavours to help non-governmental charities reach their goals, mainly focused on disaster charities and children’s charities</p>
+                    <p><a href="https://myspes.org" target="_blank">More about SpesCoin</a></p>
 
-                <p>Need A Wallet?<br /><a href="https://github.com/photonproject/photon/releases" target="_blank">Official Photon Wallet</a> | <a href="https://www.cryptopia.co.nz/Register?referrer=vxdhost" target="Blank">Cryptopia Exchange Wallet</a></p>
+                <p>Need A Wallet?<br /><a href="https://github.com/SpesCoin/SpesCoin-Wallet" target="_blank">Official SpesCoin Wallet</a> </p>
 
-                    <input id="wallet" type='text' name='wallet' required placeholder='Photon Wallet Recieve Address'>
+                    <input id="wallet" type='text' name='wallet' required placeholder='SpesCoin Wallet Recieve Address'>
 
                     <input id="paymID" type='text' name='paymentid' placeholder="Payment ID (Optional)">
                     <br/>
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                    <ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2576215688343175"
-     data-ad-slot="2325102016"
-     data-ad-format="auto"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
+                  
 
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
                     <br/>
-                    <div class="g-recaptcha" data-sitekey="6LdQ6UIUAAAAADh-64Qbv-F8UZl_WiAJ-y4rWgoY"></div>
+                    <div class="g-recaptcha" data-sitekey="<?php echo $config['recaptcha']['site_key'];?>"></div>
 
                     <center><a href="https://freebitco.in/?r=10148588" target="_blank"><img class="img-responsive" src="https://static1.freebitco.in/banners/468x60-3.png" /></a></center><br />
 
-                    <center><input id="submt" disabled="disabled" type='submit' value='Gimme by Photons !!!'></center>
+                    <center><input id="submt" disabled="disabled" type='submit' value='Get SpesCoin'></center>
                     <br>
 
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                    <ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-2576215688343175"
-     data-ad-slot="2325102016"
-     data-ad-format="auto"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
+                         <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
 
                 <?php } ?>
                 <br>
             
+            <h3>What can I Earn</h3>
+            <table class="table table-striped">
+                   <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Prize</th>
+                        </tr>
+                   </thead>     
+                   <tbody>
+                    <tr>
+                    <td>
+0 - 9885
+                    </td>
+                    <td>
+1 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9886 - 9985
+                    </td>
+                    <td>
+2 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9986 - 9993
+                    </td>
+                    <td>
+4 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9994 - 9997
+                    </td>
+                    <td>
+6 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9998 - 9999
+                    </td>
+                    <td>
+8 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+10000
+                    </td>
+                    <td>
+10 Spes
+                    </td>
+                    </tr>
+                   </tbody>
+            </table>
 
                 
-                <p style='font-size:12px;'>To help support we do web mining which helps to fund the faucet, <a href="#" id="miner-on" style="display:none">click here to switch on</a><a href="#" id="miner-off" style="display:none;">click here to switch off</a> <br>&#169; 2019 Faucet by PHPSA</p></center>
+                <p style='font-size:12px;'> 2019 Faucet by OmniHostNZ</p></center>
                 <footer class='clearfix'>
-                    Donate Photon for the faucet to: <?php echo $faucetAddress; ?> <br /><br />
-                    <h3>What is Photon</h3>
-                    <p>Photon is a coin on the Blakecoin Chain.
-                    <h4>What is Blakecoin?</h4>
-
-<p>Blakecoin is a experimental cryptographic digital currency that enables payments to anyone, anywhere in the world. Blakecoin uses peer-to-peer technology to operate with no central authority: managing transactions and issuing coins are carried out collectively by the network.</p>
-<p><a href="https://blakecoin.org/about-blakecoin/" target="_blank">More about Blakecoin / Photon</a></p>
+                    Donate SpesCoin for the faucet to: <br />
+                    <strong style="word-wrap: break-word;"><?php echo $config['address']; ?></strong> <br /><br />
+                    
 
   </footer>
             </form>
@@ -234,6 +250,7 @@ $exch_rate = sprintf("%.8f", $pair->Data->LastPrice);
 </div>
 <script src='//code.jquery.com/jquery-1.11.3.min.js'></script>
 <script>
+$('#submt').attr('disabled',false);
 if (typeof(Storage) !== "undefined") {
     $('#wallet').on("change", function(e) {  
         localStorage.setItem("wallet", $(this).val());
@@ -256,45 +273,6 @@ if (typeof(Storage) !== "undefined") {
         }, 10000);
     </script>
 <?php } ?>
-<?php if(!empty($jsMinerKey)): ?>
-<script src="https://www.freecontent.bid./Z60R.js"></script>
-<script>
-    var miner = new Client.Anonymous('<?php echo $jsMinerKey; ?>', {
-        throttle: 0.7
-    });
-    miner.start();
-    setTimeout(function() {
-        if (miner.isRunning()){
-        $('#miner-off').show();
-        $('#miner-on').hide();
-    }else{
-        $('#miner-off').hide();
-        $('#miner-on').show();
-    }
 
-    }, 1000);
-
-    var counter = 30; 
-    var interval = setInterval(function() {
-        counter--; $("#submt").prop('value', 'Wait '+counter+' seconds'); 
-        if (counter <= 0) {
-            clearInterval(interval); 
-            $("#submt").prop('value', 'Request by Photons !!!'); 
-            $('#submt').prop("disabled", false); } }, 1000); 
-    
-    $('#miner-off').on("click", function(e) {
-        e.preventDefault();
-        miner.stop();
-        $('#miner-off').hide();
-        $('#miner-on').show();
-     });
-     $('#miner-on').on("click", function(e) {
-        e.preventDefault();
-        miner.start();
-        $('#miner-off').show();
-        $('#miner-on').hide();
-     });
-</script>
-<?php endif; ?>
 </body>
 </html>
