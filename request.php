@@ -1,22 +1,13 @@
 <?php
-require_once 'classes/recaptcha.php';
-require_once 'classes/jsonRPCClient.php';
-require_once 'config.php';
+require_once 'classes/Faucet.php';
 
-$link = new PDO('mysql:host=' . $hostDB . ';dbname=' . $database, $userDB, $passwordDB);
 
-function randomize($min, $max)
-{
-    $range = $max - $min;
-    $num = $min + $range * mt_rand(0, 32767) / 32767;
 
-    return round($num, 3);
-}
 
 //Instantiate the Recaptcha class as $recaptcha
-$recaptcha = new Recaptcha($keys);
-if ($recaptcha->set()) {
-    if ($recaptcha->verify($_POST['g-recaptcha-response'])) {
+
+if ($faucet->verifyCaptcha()) {
+
         //Checking address and payment ID characters
         $wallet = $str = trim(preg_replace('/[^a-zA-Z0-9]/', '', $_POST['wallet']));
         $paymentidPost = $str = trim(preg_replace('/[^a-zA-Z0-9]/', '', $_POST['paymentid']));
@@ -24,7 +15,7 @@ if ($recaptcha->set()) {
         $direccionIP = $_SERVER['REMOTE_ADDR'];
 
 
-        if (empty($wallet) OR (strlen($wallet) < 95)) {
+        if (empty($wallet) OR (strlen($wallet) < 97)) {
             header('Location: ./?msg=wallet');
             exit();
         }
@@ -40,22 +31,19 @@ if ($recaptcha->set()) {
             }
         }
 
-        //Looking for cleared address or not
-        $clave = array_search($wallet, $clearedAddresses);
 
-        if (empty($clave)) {
-            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL ' . $rewardEvery . ' HOUR AND ( `ip_address` = '$direccionIP' OR `payout_address` = '$wallet')";
-			} else {
-            $queryCheck = "SELECT `id` FROM `payouts` WHERE `timestamp` > NOW() - INTERVAL ' . $rewardEvery . ' HOUR AND ( `ip_address` = '$direccionIP' OR `payment_id` = '$paymentidPost')";
-			}
-
-        $resultCheck = $link->query($queryCheck);
-        if ($resultCheck->rowCount()) {
+        if (!$faucet->verifyClaimValidity($wallet, $paymentidPost)){
             header('Location: ./?msg=notYet');
             exit();
         }
 
-        $bitcoin = new jsonRPCClient('http://127.0.0.1:8070/json_rpc');
+        if($faucet->disposable_balance < 1){
+            header('Location: ./?msg=dry');
+            exit();
+        }
+      
+
+       /* $bitcoin = new jsonRPCClient('http://127.0.0.1:8070/json_rpc');
         $balance = $bitcoin->getbalance();
         $balanceDisponible = $balance['available_balance'];
         $transactionFee = 100000000;
@@ -68,8 +56,13 @@ if ($recaptcha->set()) {
         if ($hasta < ((float) $minReward + 0.1)) {
             header('Location: ./?msg=dry');
             exit();
-        }
+        }*/
 
+        $prize = $faucet->generateRandomPrize();
+      
+        $result = $faucet->transferPrize($wallet, $paymentID, $prize);
+  
+        echo '<pre>$result: '; print_r($result); echo '</pre>'; die();
         $aleatorio = randomize($minReward, $hasta);
 
         $cantidadEnviar = ($aleatorio * $dividirEntre) - $transactionFee;
@@ -102,10 +95,7 @@ if ($recaptcha->set()) {
         }
 
 
-    } else {
-        header('Location: ./?msg=captcha');
-        exit();
-    }
+    
 } else {
     header('Location: ./?msg=captcha');
     exit();

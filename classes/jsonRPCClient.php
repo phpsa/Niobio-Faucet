@@ -122,7 +122,7 @@ class jsonRPCClient
                                                 'params' => $params
                                                 );
 
-            if ($method == "send_transaction" or $method == "get_transaction" or $method == "transfer") {
+            if ($method == "sentTransaction" || $method == "send_transaction" or $method == "get_transaction" or $method == "transfer") {
                 $request = str_replace(array('[', ']'), '', htmlspecialchars(json_encode($request), ENT_NOQUOTES));
                 $this->debug && $this->debug.='***** Request *****'."\n".$request."\n".'***** End Of request *****'."\n\n";
 
@@ -152,7 +152,8 @@ class jsonRPCClient
                 // final checks and return
                 if (!$this->notification) {
                     if (!is_array($response)) {
-                        echo "Can't connect to wallet. Please try again later.";
+                        throw new Exception("Can't connect to wallet. Please try again later.");
+                       
                         exit();
                     }
 

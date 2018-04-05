@@ -1,15 +1,11 @@
 <?php
 
-ini_set('max_execution_time', 20);
-require_once 'classes/jsonRPCClient.php';
-require_once 'classes/recaptcha.php';
-require_once 'config.php';
-
+require_once 'classes/Faucet.php';
 ?><!DOCTYPE html>
 <html>
 <head>
     <meta charset='UTF-8'>
-    <title><?php echo $faucetTitle; ?></title>
+    <title><?php echo $faucet->lang('site_title'); ?></title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='shortcut icon' href='images/favicon.ico'>
     <link rel='icon' type='image/icon' href='images/favicon.ico'>
@@ -25,22 +21,7 @@ require_once 'config.php';
         }
     </script>
 
-    <!--<script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-78493281-2', 'auto');
-        ga('send', 'pageview');
-    </script>-->
+    <!--Analytics Code Here-->
 </head>
 
 <body>
@@ -50,194 +31,101 @@ require_once 'config.php';
     <div id='login-form'>
 
 
-        <h3><a href='./'><img src='<?php echo $logo; ?>' height='256'></a><br/><br/> <?php echo $faucetSubtitle; ?></h3>
+        <h3><a href='./'><img src='<?php echo $faucet->config('logo'); ?>' height='256'></a><br/><br/> <?php echo $faucet->lang('site_header'); ?></h3>
 
 
         <fieldset>
-
-            <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-           <!-- <iframe data-aa='195916' src='https://ad.a-ads.com/195916?size=728x90' scrolling='no'
-                    style='width:728px; height:90px; border:0px; padding:0;overflow:hidden' allowtransparency='true'
-                    frameborder='0'></iframe>-->
-            <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-            <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&OneJS=1&Operation=GetAdHtml&MarketPlace=BR&source=ac&ref=tf_til&ad_type=product_link&tracking_id=nbr0f-20&marketplace=amazon&region=BR&placement=B012ELKC28&asins=B012ELKC28&linkId=27e95f3d90da4c00a36df88afe360188&show_border=false&link_opens_in_new_window=false&price_color=333333&title_color=0066C0&bg_color=FFFFFF">
-            </iframe>
+            <div class="alert alert-info">
+            SpesCoin endeavours to help non-governmental charities reach their goals, mainly focused on disaster charities and children’s charities
+            </div>
+            <!--h3>Ad Block 1</h3-->
             <br/>
-
-
-            <?php
-
-            $bitcoin = new jsonRPCClient('http://127.0.0.1:8070/json_rpc');
-
-            $balance = $bitcoin->getbalance();
-            $balanceDisponible = $balance['available_balance'];
-            $lockedBalance = $balance['locked_amount'];
-            $dividirEntre = 100000000;
-            $totalBCN = ($balanceDisponible + $lockedBalance) / $dividirEntre;
-
-
-            $recaptcha = new Recaptcha($keys);
-            //Available Balance
-            $balanceDisponibleFaucet = number_format(round($balanceDisponible / $dividirEntre, 12), 12, '.', '');
-            ?>
-
             <form action='request.php' method='POST'>
+            <?php if (isset($_GET['msg'])) {
+                $message = $_GET['msg'];
 
-                <?php if (isset($_GET['msg'])) {
-                    $mensaje = $_GET['msg'];
-
-                    if ($mensaje == 'captcha') {
-                        ?>
+                    if ($message == 'captcha') {
+                    ?>
                         <div id='alert' class='alert alert-error radius'>
-                            Captcha inválido, digite o correto.
+                          <?php echo $faucet->lang('invalid_captcha'); ?>
                         </div>
-                    <?php } else if ($mensaje == 'wallet') { ?>
+                    <?php } else if ($message == 'wallet') {?>
 
                         <div id='alert' class='alert alert-error radius'>
-                            Digite o endereço NBR correto.
+                            <?php echo $faucet->lang('invalid_wallet'); ?>
                         </div>
-                    <?php } else if ($mensaje == 'success') { ?>
+                    <?php } else if ($message == 'success') {?>
 
                         <div class='alert alert-success radius'>
-                            Ви виграли <?php echo $_GET['amount']; ?> крб.<br/><br/>
-                            Ви отримаєте <?php echo $_GET['amount'] - 0.0001; ?> крб. (Комісія мережі 0.0001)<br/>
+                            You've earned <?php echo $_GET['amount']; ?> SpesCoin.<br/><br/>
+                            We've transfered <?php echo $_GET['amount'] - 0.0001; ?> Spes. (Transfer Fee 0.0001)<br/>
                             <a target='_blank'
-                               href='http://explorer.karbowanec.com/?hash=<?php echo $_GET['txid']; ?>#blockchain_transaction'>Confira na Blockchain.</a>
+                               href='http://pool.myspes.org/?hash=<?php echo $_GET['txid']; ?>#blockchain_block'>Confirm in Blockchain.</a>
                         </div>
-                    <?php } else if ($mensaje == 'paymentID') { ?>
+                    <?php } else if ($message == 'paymentID') {?>
 
                         <div id='alert' class='alert alert-error radius'>
-                            Verifique o seu ID de pagamento. <br>Deve ser composto por 64 caracteres sem caracteres especiais.
+                        <?php echo $faucet->lang('invalid_payment_id'); ?>
                         </div>
-                    <?php } else if ($mensaje == 'notYet') { ?>
+                    <?php } else if ($message == 'notYet') {?>
 
                         <div id='alert' class='alert alert-warning radius'>
-                            Os nióbios são emitidos uma vez a cada 12 horas. Venha mais tarde.
+                            <?php echo $faucet->lang('too_soon'); ?>
                         </div>
-                    <?php } else if ($mensaje == 'dry') { ?>
+                    <?php } else if ($message == 'dry') {?>
 
                         <div id='alert' class='alert alert-warning radius'>
-                            No donuts for you. Não foi dessa vez. Tente novamente.
+                            <?php echo $faucet->lang('no_funds'); ?>
                         </div>
-                    <?php } ?>
+                    <?php }?>
 
-                <?php } ?>
+                <?php }?>
                 <div class='alert alert-info radius'>
-                    Saldo: <?php echo $balanceDisponibleFaucet ?> NBR.<br>
-                    <?php
-
-                    $link = new PDO('mysql:host=' . $hostDB . ';dbname=' . $database, $userDB, $passwordDB);
-
-                    $query = 'SELECT SUM(payout_amount) FROM `payouts`;';
-
-                    $result = $link->query($query);
-                    $dato = $result->fetchColumn();
-
-                    $query2 = 'SELECT COUNT(*) FROM `payouts`;';
-
-                    $result2 = $link->query($query2);
-                    $dato2 = $result2->fetchColumn();
-
-                    ?>
-
-                    Realizados: <?php echo $dato[0] / $dividirEntre; ?> de <?php echo $dato2[0]; ?> pagamentos.
+                <?php if($faucet->faucet_error): ?>
+    <?php echo $faucet->faucet_error; ?>
+                <?php else: ?>
+                    Balance: <?php echo $faucet->disposable_balance ?> SPES.<br>
+                    <?php endif; ?>
+                
+                    Payments: <?php echo $faucet->getTotalPayoutsValue(); ?> in <?php echo $faucet->getTotalPayoutsCount(); ?> payments.
                 </div>
 
-                <?php if ($balanceDisponibleFaucet < 1.0) { ?>
+                <?php if ($faucet->disposable_balance < 1 ) {?>
                     <div class='alert alert-warning radius'>
-                        A carteira está vazia ou o saldo é menor do que o ganho. <br> Venha mais tarde, &ndash; podemos receber mais doações.
+                        The wallet is empty, <br> Come back later.
                     </div>
 
-                <?php } elseif (!$link) {
+                <?php 
+} else {
+    ?>
 
-                    // $link = mysqli_connect($hostDB, $userDB, $passwordDB, $database);
+<!--h3>Ad Block 2</h3-->
+                    <input type='text' name='wallet' required placeholder='SPEC Wallet Address'>
 
-
-                    die('Помилка піключення' . mysql_error());
-                } else { ?>
-
-                    <input type='text' name='wallet' required placeholder='Endereço da carteira NBR'>
-
-                    <input type='text' name='paymentid' placeholder='ID do pagamento (Opcional)'>
+                    <input type='text' name='paymentid' placeholder='PaymentID (Optional)'>
                     <br/>
-                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                    <iframe style="width:120px;height:240px;" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&OneJS=1&Operation=GetAdHtml&MarketPlace=BR&source=ac&ref=tf_til&ad_type=product_link&tracking_id=nbr0f-20&marketplace=amazon&region=BR&placement=B0186FEYKW&asins=B0186FEYKW&linkId=6089e0501d9dd35e7b6d76b0f4f60c62&show_border=false&link_opens_in_new_window=false&price_color=333333&title_color=0066c0&bg_color=ffffff">
-                </iframe>
-
-                    <!--<iframe scrolling='no' frameborder='0' style='overflow:hidden;width:728px;height:90px;'
-                            src='//bee-ads.com/ad.php?id=19427'></iframe>-->
-
-                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
+                    <!--h3>Ad Block 3</h3-->
+                
                     <br/>
                     <?php
-                    echo $recaptcha->render();
-                    ?>
 
-                    <center><input type='submit' value='Obter nióbios grátis!'></center>
+    echo $faucet->recaptchaRender();
+    ?>
+    <!--h3>Ad Block 4</h3-->
+
+                    <center><input type='submit' value='Get your Free SPEC'></center>
                     <br>
-                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                    <!--iframe scrolling='no' frameborder='0' style='overflow:hidden;width:468px;height:60px;' src='//bee-ads.com/ad.php?id=6534'></iframe-->
-                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                <?php } ?>
+                    <!--h3>Ad Block 5</h3-->
+                <?php }?>
                 <br>
-                <?php /*
-           <div class='table-responsive'>
-            <table class='table table-bordered table-condensed'>
-              <thead>
-                <tr>
-                  <th><h6><b>Cleared Sites</b><br> <small>Sites that have their wallets allowed to request more than 1 time but only with a different payment id.</small></h6></th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php foreach ($clearedAddresses as $key => $item) {
-                  echo '<tr>
-                  <th>'.$key.'</th>
-                  </tr>';
-
-                }?>
-              </tbody>
-            </table>
-          </div>
-*/ ?>
-
-                <div class='table-responsive'>
-                    <h6><b>Últimos 5 pagamentos</b></h6>
-                    <table class='table table-bordered table-condensed'>
-                        <thead>
-                        <tr>
-                            <th>Data/hora</th>
-                            <th>Valor</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $deposits = ($bitcoin->get_transfers());
-
-                        $transfers = array_reverse(($deposits['transfers']), true);
-                        $contador = 0;
-                        foreach ($transfers as $deposit) {
-                            if ($deposit['output'] == '') {
-                                if ($contador < 6) {
-                                    $time = $deposit['time'];
-                                    echo '<tr>';
-                                    echo '<th>' . gmdate('d/m/Y H:i:s', $time) . '</th>';
-                                    echo '<th>' . round($deposit['amount'] / $dividirEntre, 8) . '</th>';
-                                    echo '</tr>';
-                                    $contador++;
-                                }
-                            }
 
 
-                        }
-                        ?>
-                        </tbody>
-                    </table>
+                
                 </div>
-                <p style='font-size:12px;'>Doe nióbios para apoiar este faucet.
-                    <br>Carteira do Faucet NBR: <span style='font-size:10px;'><?php echo $faucetAddress; ?></span>
-                    <br>&#169; 2018 Faucet by vinyvicente</p></center>
+                <p style='font-size:12px;'>Donate to the Faucet: <span style='font-size:10px;'><?php echo $faucet->config('address'); ?></span>
+                    <br>&#169; 2018 Faucet by OmnihostNZ</p></center>
                 <footer class='clearfix'>
-                    <a href="https://niobiocash.com">NIOBIOCASH.COM</a>
+                    <a href="https://spescoin.com">More about spescoin</a>
                 </footer>
             </form>
 
@@ -246,13 +134,13 @@ require_once 'config.php';
 
 </div>
 <script src='//code.jquery.com/jquery-1.11.3.min.js'></script>
-<?php if (isset($_GET['msg'])) { ?>
+<?php if (isset($_GET['msg'])) {?>
     <script>
         setTimeout(function () {
             $('#alert').fadeOut(3000, function () {
             });
         }, 10000);
     </script>
-<?php } ?>
+<?php }?>
 </body>
 </html>
