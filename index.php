@@ -9,6 +9,15 @@ try {
 } catch (PDOException $e) {
     echo 'Connection failed: ' . $e->getMessage();
 }
+
+
+if(!file_exists('images/spesbtc.txt') || time() - filemtime('images/spesbtc.txt') >= 60*15){
+    file_put_contents('images/spesbtc.txt',file_get_contents("https://cryptohub.online/api/market/ticker/SPES/"));
+}
+$pair = json_decode(file_get_contents('images/spesbtc.txt'));
+//echo '<pre>$pair: '; print_r($pair->BTC_SPES->last); echo '</pre>'; die();
+$exch_rate = sprintf("%.8f", $pair->BTC_SPES->last > 0 ? $pair->BTC_SPES->last : '0.00000001');
+
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -46,7 +55,8 @@ try {
 
         <h3><a href='./'><img src='<?php echo $config['logo']; ?>' ></a><br/><br/> <?php echo $config['subtitle']; ?></h3>
 
-<p><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> </p>
+    <p style="margin-top:10px;">><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> | <a target="_blank" href="https://cryptohub.online/market/SPES/">Exchange</a> </p>
+        <?php if($exch_rate): ?><h3><center><strong>1 SPEC = <?php echo $exch_rate;?> BTC</h3><?php endif; ?>
 
         <fieldset>
 
