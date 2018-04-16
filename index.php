@@ -1,4 +1,6 @@
 <?php
+require_once 'classes/jsonRPCClient.php';
+require_once 'classes/ForkNoteWalletd.php';
 require_once 'classes/recaptcha.php';
 require_once 'config.php';
 
@@ -44,7 +46,7 @@ try {
 
         <h3><a href='./'><img src='<?php echo $config['logo']; ?>' ></a><br/><br/> <?php echo $config['subtitle']; ?></h3>
 
-<p><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet" target="_blank">SpesCoin Wallet</a> </p>
+<p><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> </p>
 
         <fieldset>
 
@@ -146,7 +148,7 @@ $dato2   = $result2->fetchObject();
                     <p>SpesCoin endeavours to help non-governmental charities reach their goals, mainly focused on disaster charities and children’s charities</p>
                     <p><a href="https://myspes.org" target="_blank">More about SpesCoin</a></p>
 
-                <p>Need A Wallet?<br /><a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet" target="_blank">Official SpesCoin Wallet</a> </p>
+                <p>Need A Wallet?<br /><a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">Official SpesCoin Wallet</a> </p>
 
                     <input id="wallet" type='text' name='wallet' required placeholder='SpesCoin Wallet Recieve Address'>
 
