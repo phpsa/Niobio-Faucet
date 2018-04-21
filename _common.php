@@ -214,3 +214,15 @@ function lastPayed($limit = 5){
 function topEarners($limit = 5){
     return DB::getAll("select *, sum(payout_amount) as total, count(*) as spins from payouts group by concat(payout_address,payment_id) order by sum(payout_amount) desc limit $limit");
 }
+
+function getEarningAds(){
+    $ads = array(
+        '<a href="https://faucethub.io/r/41582654"><img src="https://faucethub.io/assets/img/banners/1.gif"></a>',
+        '<a href="https://freebitco.in/?r=10148588" target="_blank"><img class="img-responsive" src="https://static1.freebitco.in/banners/468x60-3.png" /></a>',
+        ' <a href="http://freedoge.co.in/?r=1528473" target="_blank"><img class="img-responsive" src="http://static1.freedoge.co.in/banners/468x60-3.png" /></a>'
+    );
+    shuffle($ads);
+    return $ads;
+}
+
+$earning_ads = getEarningAds();

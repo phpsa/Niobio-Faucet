@@ -54,7 +54,10 @@ require_once '_common.php';
         <fieldset>
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-            <center><a href="http://freedoge.co.in/?r=1528473" target="_blank"><img class="img-responsive" src="http://static1.freedoge.co.in/banners/468x60-3.png" /></a></center><br />
+            <center>
+            <?php echo $earning_ads[0]; ?>
+           
+            </center><br />
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
 
@@ -131,7 +134,9 @@ require_once '_common.php';
                     <br/>
                     <div class="g-recaptcha" data-sitekey="<?php echo $config['recaptcha']['site_key']; ?>"></div>
 
-                    <center><a href="https://freebitco.in/?r=10148588" target="_blank"><img class="img-responsive" src="https://static1.freebitco.in/banners/468x60-3.png" /></a></center><br />
+                    <center>
+                    <?php echo $earning_ads[1]; ?>
+                    </center><br />
 
 
                     <div class='alert alert-info radius'>
@@ -143,6 +148,7 @@ require_once '_common.php';
                     <center><input id="submt" disabled="disabled" type='submit' value='Claim Your SpesCoin'></center>
                     <br>
 
+                    <?php echo $earning_ads[2]; ?>
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
                          <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
 

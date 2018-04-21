@@ -1,4 +1,9 @@
 {
+    "config": {
+            "platform": {
+                "php": "7.2"
+            }
+        },
     "require": {
         "theodorejb/responsive-captcha": "^3.0",
         "gabordemooij/redbean": "dev-master"
