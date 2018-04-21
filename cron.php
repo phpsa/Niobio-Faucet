@@ -24,15 +24,16 @@ $total = $rpcWallet->bigIntToDecimal($balance['availableBalance'] + $balance['lo
 $humanBalance = $rpcWallet->bigIntToDecimal($balance['availableBalance']);
 $max = 10;
 
-$wallet  = DB::findOne( 'wallet');
-        $wallet->balance = $total;
-        DB::store($wallet);
 
 
 if($humanBalance > 1){
     while($humanBalance > 1){
         $payment  = DB::findOne( 'payouts', ' paid = 0 and payout_amount <= ? and (error is null or error = "") order by id asc', [$humanBalance]);
         if(!$payment){
+            $wallet  = DB::findOne( 'wallet');
+        $wallet->balance = $total;
+        DB::store($wallet);
+
             die("No More payouts found");
         }
         
