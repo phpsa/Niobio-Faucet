@@ -1,22 +1,5 @@
 <?php
-require_once 'classes/jsonRPCClient.php';
-require_once 'classes/ForkNoteWalletd.php';
-require_once 'classes/recaptcha.php';
-require_once 'config.php';
-
-try {
-    $link = new PDO('mysql:host=' . $config['db']['host'] . ';dbname=' . $config['db']['database'], $config['db']['user'], $config['db']['password']);
-} catch (PDOException $e) {
-    echo 'Connection failed: ' . $e->getMessage();
-}
-
-
-if(!file_exists('images/spesbtc.txt') || time() - filemtime('images/spesbtc.txt') >= 60*15){
-    file_put_contents('images/spesbtc.txt',file_get_contents("https://cryptohub.online/api/market/ticker/SPES/"));
-}
-$pair = json_decode(file_get_contents('images/spesbtc.txt'));
-//echo '<pre>$pair: '; print_r($pair->BTC_SPES->last); echo '</pre>'; die();
-$exch_rate = sprintf("%.8f", $pair->BTC_SPES->last > 0 ? $pair->BTC_SPES->last : '0.00000001');
+require_once '_common.php';
 
 ?><!DOCTYPE html>
 <html>
@@ -40,10 +23,16 @@ $exch_rate = sprintf("%.8f", $pair->BTC_SPES->last > 0 ? $pair->BTC_SPES->last :
 
 <script src='https://www.google.com/recaptcha/api.js'></script>
 
+<?php if($config['ga_analytics']): ?>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $config['ga_analytics']; ?>"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-    <!--ANALYTICS HERE!!-->
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-
+  gtag('config', '<?php echo $config['ga_analytics']; ?>');
+</script>
+<?php endif ;?>
 </head>
 
 <body>
@@ -55,69 +44,57 @@ $exch_rate = sprintf("%.8f", $pair->BTC_SPES->last > 0 ? $pair->BTC_SPES->last :
 
         <h3><a href='./'><img src='<?php echo $config['logo']; ?>' ></a><br/><br/> <?php echo $config['subtitle']; ?></h3>
 
-    <p style="margin-top:10px;">><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> | <a target="_blank" href="https://cryptohub.online/market/SPES/">Exchange</a> </p>
-        <?php if($exch_rate): ?><h3><center><strong>1 SPEC = <?php echo $exch_rate;?> BTC</h3><?php endif; ?>
+    <p style="margin-top:10px;"><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> | <a target="_blank" href="https://cryptohub.online/market/SPES/">Exchange</a> </p>
+        <?php 
+            $exch_rate = getCurrentExchangeRate();
+            if($exch_rate): ?>
+                <h3><center><strong>1 SPEC = <?php echo $exch_rate;?> BTC</h3>
+        <?php endif; ?>
 
         <fieldset>
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
             <center><a href="http://freedoge.co.in/?r=1528473" target="_blank"><img class="img-responsive" src="http://static1.freedoge.co.in/banners/468x60-3.png" /></a></center><br />
 
-
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
 
             <br/>
 
 
-            <?php
-
-$query             = "SELECT * FROM `wallet`";
-$result            = $link->query($query, PDO::FETCH_ASSOC);
-$balance           = $result->fetchObject();
-$balanceDisponible = $balance->balance - $balance->pending;
-$lockedBalance     = $balance->pending;
-$dividirEntre      = 1;
-$totalBCN          = ($balanceDisponible + $lockedBalance) / $dividirEntre;
-
-//Available Balance
-$balanceDisponibleFaucet = number_format(round($balanceDisponible / $dividirEntre, 5), 5, '.', '');
-?>
-
             <form action='request.php' method='POST'>
 
                 <?php if (isset($_GET['msg'])) {
-    $mensaje = $_GET['msg'];
+    $message = $_GET['msg'];
 
-    if ($mensaje == 'captcha') {
+    if ($message == 'captcha') {
         ?>
                         <div id='alert' class='alert alert-error radius'>
                             Captcha Invalid - Please try again
                         </div>
-                    <?php } else if ($mensaje == 'wallet') {?>
+                    <?php } else if ($message == 'wallet') {?>
 
                         <div id='alert' class='alert alert-error radius'>
                             Wallet not entered correctly
                         </div>
-                    <?php } else if ($mensaje == 'success') {?>
+                    <?php } else if ($message == 'success') {?>
 
                         <div class='alert alert-success radius'>
-                        You spun <b><?php echo $_GET['draw']; ?></b> and have been awarded with <strong><?php echo $_GET['amount']; ?></strong> SpesCoin.<br/><br/>
-                        We are currently doing payments manually once per day, so you should recieve your payout within 24 hours.<br />
-                        Your Current Balance is: <?php echo $_GET['pending']; ?><br >
-                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round($_GET['pending'] - 0.0001, 10); ?><br />
+                        Congratulations!!! - You spun <b><?php echo filter_input(INPUT_GET, 'draw', FILTER_SANITIZE_NUMBER_FLOAT); ?></b> 
+                        and have been awarded with <strong><?php echo filter_input(INPUT_GET, 'amount', FILTER_SANITIZE_NUMBER_FLOAT); ?></strong> SpesCoin.<br/><br/>
+                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round(filter_input(INPUT_GET, 'amount', FILTER_SANITIZE_NUMBER_FLOAT) - 0.0001, 10); ?><br />
 
                         </div>
-                    <?php } else if ($mensaje == 'paymentID') {?>
+                    <?php } else if ($message == 'paymentID') {?>
 
                         <div id='alert' class='alert alert-error radius'>
                         Please check again your payment ID. <br>It should have 64 characters with no special chars.
                         </div>
-                    <?php } else if ($mensaje == 'notYet') {?>
+                    <?php } else if ($message == 'notYet') {?>
 
                         <div id='alert' class='alert alert-warning radius'>
                         You requested a reward less than an hour ago.
                         </div>
-                    <?php } else if ($mensaje == 'dry') {?>
+                    <?php } else if ($message == 'dry') {?>
 
                         <div id='alert' class='alert alert-warning radius'>
                         Faucet is empty or balance is lower than reward. <br> Wait for a reload or donation.
@@ -126,34 +103,17 @@ $balanceDisponibleFaucet = number_format(round($balanceDisponible / $dividirEntr
 
                 <?php }?>
                 <div class='alert alert-info radius'>
-                    Available Balance: <?php echo $balanceDisponibleFaucet ?> SpesCoin.<br>
-                    <?php
-
-$query  = 'select sum(`payout_amount`) as sum from payouts';
-$result = $link->query($query);
-$dato   = $result->fetchObject();
-
-$query2  = 'SELECT COUNT(*) as total FROM `payouts`';
-$result2 = $link->query($query2);
-$dato2   = $result2->fetchObject();
-
-?>
-
-                    Already Paid: <?php echo round($dato->sum / $dividirEntre, 10); ?> in <?php echo $dato2->total; ?> payouts.
+                    Available Balance: <?php echo getWalletBalance(10); ?> SpesCoin.<br>
+                    Already Paid: <?php echo totalPayed(); ?> in <?php echo totalPayments(); ?> payouts.
                 </div>
                 <p>You can win anything from <?php echo $config['minReward']; ?> to <?php echo $config['maxReward']; ?> SPES every hour</p>
 
-                <?php if ($balanceDisponibleFaucet < 10) {?>
+                <?php if (getWalletBalance(10) < 10) {?>
                     <div class='alert alert-warning radius'>
                     Faucet is empty or balance is lower than reward. <br> Wait for a reload or donation.
                     </div>
 
-                <?php } elseif (!$link) {
-
-    // $link = mysqli_connect($hostDB, $userDB, $passwordDB, $database);
-
-    die('DB Error' . mysql_error());
-} else {?>
+                <?php } else {?>
                 <h3>What is SpesCoin</h3>
                     <p>SpesCoin endeavours to help non-governmental charities reach their goals, mainly focused on disaster charities and children’s charities</p>
                     <p><a href="https://myspes.org" target="_blank">More about SpesCoin</a></p>
@@ -173,7 +133,14 @@ $dato2   = $result2->fetchObject();
 
                     <center><a href="https://freebitco.in/?r=10148588" target="_blank"><img class="img-responsive" src="https://static1.freebitco.in/banners/468x60-3.png" /></a></center><br />
 
-                    <center><input id="submt" disabled="disabled" type='submit' value='Get SpesCoin'></center>
+
+                    <div class='alert alert-info radius'>
+                        Did you remember your PaymentID if you are using an exchange?
+                    </div>
+                    <label><?php echo getSecondCaptcha(); ?></label>
+                    <input id="human_verification" type="text" name="human_verification" required placeholder="" />
+<p>
+                    <center><input id="submt" disabled="disabled" type='submit' value='Claim Your SpesCoin'></center>
                     <br>
 
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
@@ -258,7 +225,23 @@ $dato2   = $result2->fetchObject();
 </div>
 <script src='//code.jquery.com/jquery-1.11.3.min.js'></script>
 <script>
-$('#submt').attr('disabled',false);
+
+
+var counter = 15; 
+var interval = setInterval(function() {
+        counter--; 
+        $("#submt").prop('value', 'Claim Your Spes in '+counter+' seconds'); 
+        if (counter <= 0) {
+            clearInterval(interval); 
+            $("#submt").prop('value', 'Claim Your SpesCoin'); 
+            } }, 1000); 
+
+$('#human_verification').on('focus', function(e) { 
+    $('#submt').attr('disabled',false);
+
+});
+
+
 if (typeof(Storage) !== "undefined") {
     $('#wallet').on("change", function(e) {
         localStorage.setItem("wallet", $(this).val());

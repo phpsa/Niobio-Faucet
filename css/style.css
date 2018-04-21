@@ -110,11 +110,13 @@ input[type="submit"] {
   font-size: 14px;
 }
 
+#human_verification,
 #login-form input[name="wallet"],
 #login-form input[name="paymentid"] {
   border: 1px solid #dcdcdc;
   padding: 12px 10px;
   width: 100%;
+  border-radius: 3px;
 }
 
 #login-form input[name="wallet"] {

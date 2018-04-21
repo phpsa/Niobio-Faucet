@@ -393,6 +393,15 @@ class ForkNoteWalletd
 
     }
 
+
+    public function getAvailableBalance($address = ''){
+        $balances = $this->getBalance($address);
+        if($balances){
+            return $balances['availableBalance'];
+        }
+        return 0;
+    }
+
     /**
      * getBlockHashes method returns an array of block hashes for a specified block range.
      * Input example:
@@ -805,6 +814,9 @@ class ForkNoteWalletd
         $args["id"]      = "test";
         $args["method"]  = "sendTransaction";
         if ($fromAddresses) {
+            if(!is_array($fromAddresses)){
+                $fromAddresses = array($fromAddresses);
+            }
             $args["params"]["addresses"] = $fromAddresses;
         }
 
