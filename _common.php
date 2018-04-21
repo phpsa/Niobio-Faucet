@@ -202,7 +202,7 @@ function addPrizeToDatabase($prize,$wallet,$paymentID){
     DB::store($payout);
 
     //upate our pending table!
-    DB::exec("update `wallet` set `pending` = `pending` +  $prize");
+    DB::exec("update `wallet` set `pending` = `pending` +  " . $prize['prize']);
     
 }
 
