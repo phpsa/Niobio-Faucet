@@ -50,7 +50,7 @@ function getCurrentExchangeRate()
 function getWalletBalance($decimals = 10)
 {
     $wallet = DB::find('wallet')[1];
-    $total += ($wallet->balance - $wallet->pending);
+    $total = ($wallet->balance - $wallet->pending);
     
     return number_format(round($total, $decimals), $decimals, ".", "");
 }
@@ -204,4 +204,13 @@ function addPrizeToDatabase($prize,$wallet,$paymentID){
     //upate our pending table!
     DB::exec("update `wallet` set `pending` = `pending` +  $prize");
     
+}
+
+function lastPayed($limit = 5){
+    return DB::getAll("Select * from payouts where paid = 1 and transaction_id != '' and transaction_id is not null order by id desc limit $limit");
+    
+}
+
+function topEarners($limit = 5){
+    return DB::getAll("select *, sum(payout_amount) as total, count(*) as spins from payouts group by concat(payout_address,payment_id) order by sum(payout_amount) desc limit $limit");
 }

@@ -2,3 +2,4 @@
 *.DS*
 config.php
 /vendor
+/images/spesbtc.txt

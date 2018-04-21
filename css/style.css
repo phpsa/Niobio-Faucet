@@ -232,3 +232,15 @@ a:hover{
    text-align: center;  
    font-size: 10px;
 }
+
+.table-sm>tbody>tr>td, .table-sm th{
+    padding: 0.3rem;
+    font-size: 75%;
+    font-weight:normal;
+    text-align:left;
+
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

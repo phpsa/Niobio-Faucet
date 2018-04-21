@@ -44,7 +44,7 @@ require_once '_common.php';
 
         <h3><a href='./'><img src='<?php echo $config['logo']; ?>' ></a><br/><br/> <?php echo $config['subtitle']; ?></h3>
 
-    <p style="margin-top:10px;"><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> | <a target="_blank" href="https://cryptohub.online/market/SPES/">Exchange</a> </p>
+    <p style="margin-top:10px;"><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> | <a target="_blank" href="https://cryptohub.online/?ref=22726">Exchange</a> </p>
         <?php 
             $exch_rate = getCurrentExchangeRate();
             if($exch_rate): ?>
@@ -149,6 +149,8 @@ require_once '_common.php';
                 <?php }?>
                 <br>
 
+<div class="row">
+    <div class="col-md-12">
             <h3>What can I Earn</h3>
             <table class="table table-striped">
                    <thead>
@@ -208,6 +210,54 @@ require_once '_common.php';
                     </tr>
                    </tbody>
             </table>
+            </div>
+            <div class="col-md-12">
+            <h3>Recent Payments</h3>
+            <table class="table table-bordered table-sm table-striped table">
+                   <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Drawn</th>
+                            <th>Prize</th>
+                            <th>Hash</th>
+                        </tr>
+                   </thead>
+                   <tbody>
+<?php foreach(lastPayed(10) as $earner): ?>
+    <tr>
+    <td><?php echo $earner['payout_address'];?><?php echo ($earner['payment_id'])?':' . $earner['payment_id']:''; ?></td>
+    <td><?php echo $earner['drawn']; ?></td>
+    <td><?php echo $earner['paid']; ?></td>
+    <td><a target="_BLANK" href="http://pool.myspes.org/?hash=<?php echo $earner['transaction_id'];?>#blockchain_transaction">View Transaction</a>
+<?php endforeach; ?>
+                   </tbody>
+                   </tr>
+                   </table>
+
+                    </div>
+                    <div class="col-md-12">
+            <h3>Top Earners</h3>
+            <table class="table table-bordered table-sm table-striped table">
+                   <thead>
+                        <tr>
+                            <th>Address</th>
+                            <th>Played</th>
+                            <th>Earned</th>
+                        </tr>
+                   </thead>
+                   <tbody>
+                   <?php foreach(topEarners(10) as $earner): ?>
+    <tr>
+    <td><?php echo $earner['payout_address'];?><?php echo ($earner['payment_id'])?':' . $earner['payment_id']:''; ?></td>
+    <td><?php echo $earner['spins']; ?></td>
+    <td><?php echo $earner['total']; ?></td>
+   <?php endforeach; ?>
+                   </tbody>
+                   </tr>
+                   </table>
+
+                    </div>
+            </div>
 
 
                 <p style='font-size:12px;'> 2019 Faucet by OmniHostNZ</p></center>
