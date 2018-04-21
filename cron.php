@@ -24,6 +24,10 @@ $total = $rpcWallet->bigIntToDecimal($balance['availableBalance'] + $balance['lo
 $humanBalance = $rpcWallet->bigIntToDecimal($balance['availableBalance']);
 $max = 10;
 
+$wallet  = DB::findOne( 'wallet');
+        $wallet->balance = $total;
+        DB::store($wallet);
+
 
 if($humanBalance > 1){
     while($humanBalance > 1){
