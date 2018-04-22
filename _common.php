@@ -172,15 +172,17 @@ function verifyPaymentIdRequired($wallet, $paymentID)
 
 function verifyClaimTime($wallet,$paymentID = ''){
     $clave = array_search($wallet, Config::get('clearedAddresses'));
+
     $rewardInterval = Config::get('rewardEvery');
 
     $query = "Select `id` from `payouts` where `timestamp` > NOW() - INTERVAL {$rewardInterval} Hour AND (";
     $query .= " `ip_address` = '" . get_ip_address() . "' ";
-    if($clave){
+    if($clave !== false && $paymentID){
         $query .= " OR `payment_id` = '{$paymentID}')";
     }else{
         $query .= " OR `payout_address` = '{$wallet}')";
     }
+
 
     $id = DB::getCell( $query );
 
