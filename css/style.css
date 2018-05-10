@@ -111,6 +111,7 @@ input[type="submit"] {
 }
 
 #human_verification,
+#login-form select,
 #login-form input[name="wallet"],
 #login-form input[name="paymentid"] {
   border: 1px solid #dcdcdc;
@@ -126,6 +127,12 @@ input[type="submit"] {
 #login-form input[name="paymentid"] {
   border-top: none;
   border-radius: 0px 0px 3px 3px;
+}
+
+#login-form select {
+    height: 40px;
+    margin-bottom: 15px;
+
 }
 
 #login-form input[type="submit"] {
@@ -243,4 +250,8 @@ a:hover{
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.charity {
+    display: none;
 }

@@ -36,15 +36,29 @@ if($humanBalance > 1){
 
             die("No More payouts found");
         }
+
+        $charity_share = 0;
+        if($payment->charity_address){
+            $charity_share = round($payment->payout_amount * 0.15, 10);
+        }
         
         $transfer = array(
-            'amount' => $rpcWallet->decimalToBigInt($payment->payout_amount) - 1000000,
+            'amount' => $rpcWallet->decimalToBigInt($payment->payout_amount - $charity_share) - 1000000,
             'address' => $payment->payout_address
         );
 
+        $transfers = array($transfer);
+
+        if($payment->charity_address){
+            $transfers[] = array(
+                'amount' => $rpcWallet->decimalToBigInt($charity_share),
+                'address' => $payment->charity_address
+            );
+        }
+
         //Make the payment::
         try {
-            $status = $rpcWallet->sendTransaction($rpcAddress, [$transfer], $payment->payment_id);
+            $status = $rpcWallet->sendTransaction($rpcAddress, $transfers, $payment->payment_id);
 
             if(!$status){
                 $payment->error = "Investigate payment";

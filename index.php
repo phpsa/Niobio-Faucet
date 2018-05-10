@@ -48,7 +48,7 @@ require_once '_common.php';
         <?php 
             $exch_rate = getCurrentExchangeRate();
             if($exch_rate): ?>
-                <h3><center><strong>1 SPEC = <?php echo $exch_rate;?> BTC</h3>
+                <h3><center><strong>1 SPES = <?php echo $exch_rate;?> BTC</h3>
         <?php endif; ?>
 
         <fieldset>
@@ -81,12 +81,32 @@ require_once '_common.php';
                         </div>
                     <?php } else if ($message == 'success') {?>
 
-                        <div class='alert alert-success radius'>
-                        Congratulations!!! - You spun <b><?php echo filter_input(INPUT_GET, 'draw', FILTER_SANITIZE_NUMBER_FLOAT); ?></b> 
-                        and have been awarded with <strong><?php echo filter_input(INPUT_GET, 'amount', FILTER_SANITIZE_NUMBER_FLOAT); ?></strong> SpesCoin.<br/><br/>
-                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round(filter_input(INPUT_GET, 'amount', FILTER_SANITIZE_NUMBER_FLOAT) - 0.0001, 10); ?><br />
-
+                        
+                        <?php $prize = fetchPrizeFromDatabase(filter_input(INPUT_GET, 'tx')); 
+                        if(!$prize): ?>
+                        <div class='alert alert-error radius'>
+    Error Validating Prize.
                         </div>
+                    <?php else: ?>
+
+                        <div class='alert alert-success radius'>
+
+                        <?php if($prize->charity_address): ?>
+                        <?php $charity_share_value = round($prize->payout_amount * 0.15, 10) ; ?>
+                        Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b> 
+                        and have been awarded with <strong><?php echo $prize->payout_amount; ?></strong> SpesCoin.<br/><br/>
+                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round($prize->payout_amount - $charity_share_value - 0.0001, 10); ?><br />
+                        Your Charity will recieve <?php echo $charity_share_value;?>
+
+                        <?php else: ?>
+
+                        Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b> 
+                        and have been awarded with <strong><?php echo $prize->payout_amount; ?></strong> SpesCoin.<br/><br/>
+                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round($prize->payout_amount - 0.0001, 10); ?><br />
+                    <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                        
                     <?php } else if ($message == 'paymentID') {?>
 
                         <div id='alert' class='alert alert-error radius'>
@@ -126,39 +146,22 @@ require_once '_common.php';
                     <input id="wallet" type='text' name='wallet' required placeholder='SpesCoin Wallet Recieve Address'>
 
                     <input id="paymID" type='text' name='paymentid' placeholder="Payment ID (Optional)">
+                    
+                    <p>Donate 15% of winnings to charity & double your chance of higher winnings</p>
+
+                    <select name="charity" id="charitydonation">
+                            <option value="">No Donation</div>
+                            <?php foreach(Config::get('charities') as $charity => $charity_add): ?>
+                            <option value="<?php echo $charity; ?>"><?php echo $charity; ?></option>
+                            <?php endforeach; ?>
+                    </select>
                     <br/>
                     <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
 
-
-                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                    <br/>
-                    <div class="g-recaptcha" data-sitekey="<?php echo $config['recaptcha']['site_key']; ?>"></div>
-
-                    <center>
-                    <?php echo $earning_ads[1]; ?>
-                    </center><br />
-
-
-                    <div class='alert alert-info radius'>
-                        Did you remember your PaymentID if you are using an exchange?
-                    </div>
-                    <label><?php echo getSecondCaptcha(); ?></label>
-                    <input id="human_verification" type="text" name="human_verification" required placeholder="" />
-<p>
-                    <center><input id="submt" disabled="disabled" type='submit' value='Claim Your SpesCoin'></center>
-                    <br>
-
-                    <?php echo $earning_ads[2]; ?>
-                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-                         <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
-
-                <?php }?>
-                <br>
-
-<div class="row">
+                    <div class="row">
     <div class="col-md-12">
             <h3>What can I Earn</h3>
-            <table class="table table-striped">
+            <table class="table table-striped nocharity">
                    <thead>
                         <tr>
                             <th>Number</th>
@@ -216,7 +219,138 @@ require_once '_common.php';
                     </tr>
                    </tbody>
             </table>
+
+ <table class="table table-striped charity">
+                   <thead>
+                        <tr>
+                            <th>Number</th>
+                            <th>Prize</th>
+                        </tr>
+                   </thead>
+                   <tbody>
+
+<tr>
+                    <td>
+0000
+                    </td>
+                    <td>
+10 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+0001-0002
+                    </td>
+                    <td>
+8 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+0003 - 0007
+                    </td>
+                    <td>
+6 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+0008 - 0015
+                    </td>
+                    <td>
+4 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+0016 - 0115
+                    </td>
+                    <td>
+2 Spes
+                    </td>
+                    </tr>
+
+                    <tr>
+                    <td>
+0117 - 9885
+                    </td>
+                    <td>
+1 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9886 - 9985
+                    </td>
+                    <td>
+2 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9986 - 9993
+                    </td>
+                    <td>
+4 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9994 - 9997
+                    </td>
+                    <td>
+6 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+9998 - 9999
+                    </td>
+                    <td>
+8 Spes
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
+10000
+                    </td>
+                    <td>
+10 Spes
+                    </td>
+                    </tr>
+                   </tbody>
+            </table>
+
             </div>
+            </div>
+
+
+                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
+                    <br/>
+                    <div class="g-recaptcha" data-sitekey="<?php echo $config['recaptcha']['site_key']; ?>"></div>
+
+                    <center>
+                    <?php echo $earning_ads[1]; ?>
+                    </center><br />
+
+
+                    <div class='alert alert-info radius'>
+                        Did you remember your PaymentID if you are using an exchange?
+                    </div>
+                    <label><?php echo getSecondCaptcha(); ?></label>
+                    <input id="human_verification" type="text" name="human_verification" required placeholder="" />
+<p>
+                    <center><input id="submt" disabled="disabled" type='submit' value='Claim Your SpesCoin'></center>
+                    <br>
+
+                    <?php echo $earning_ads[2]; ?>
+                    <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
+                         <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
+
+                <?php }?>
+                <br>
+
+<div class="row">
             <div class="col-md-12">
             <h3>Recent Payments</h3>
             <table class="table table-bordered table-sm table-striped table">
@@ -295,6 +429,16 @@ var interval = setInterval(function() {
 $('#human_verification').on('focus', function(e) { 
     $('#submt').attr('disabled',false);
 
+});
+
+$('#charitydonation').on("change", function() {
+    if($(this).val() === ''){
+        $('.charity').hide();
+        $('.nocharity').show();
+    }else{
+        $('.charity').show();
+        $('.nocharity').hide();
+    }
 });
 
 

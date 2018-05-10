@@ -8,10 +8,18 @@ if(!confirmCaptcha()){
 }
 
 $wallet =  sanitizeWallet(filter_input(INPUT_POST, "wallet"));
-$paymentidPost = sanitizeWallet(filter_input(INPuT_POST, "paymentid"));
+$paymentidPost = sanitizeWallet(filter_input(INPUT_POST, "paymentid"));
+$charityPost = filter_input(INPUT_POST, "charity");
+$charity_address = false;
+if($charityPost){
+    $charities = Config::get('charities');
+    if(isset($charities[$charityPost])){
+        $charity_address = $charities[$charityPost];
+    }
+}
 
 
-$wallet = trim(preg_replace('/[^a-zA-Z0-9]/', '', $_POST['wallet']));
+$wallet = trim(preg_replace('/[^a-zA-Z0-9]/', '', $wallet));
 if (empty($wallet) OR (strlen($wallet) < 97)) {
     header('Location: ./?msg=wallet');
     exit();
@@ -45,13 +53,13 @@ if (getWalletBalance() < (float) Config::get('minReward')) {
     exit();
 }
 
-$prizeData = randomize();
+$prizeData = randomize($charity_address);
 if($prizeData['prize'] < Config::get('minReward')){
     header('Location: ./?msg=dry');
     exit();
 }
 
-addPrizeToDatabase($prizeData,$wallet,$paymentID);
+$tx = addPrizeToDatabase($prizeData,$wallet,$paymentID,$charity_address);
 
-header('Location: ./?msg=success&draw=' . $prizeData['number'] . '&amount=' . $prizeData['prize']);
+header('Location: ./?msg=success&tx=' . $tx);
 

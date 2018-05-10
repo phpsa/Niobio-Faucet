@@ -77,7 +77,7 @@ function getSecondCaptcha()
 
 }
 
-function randomize()
+function randomize($charity_address = false)
 {
 
     $min = Config::get('minReward');
@@ -91,15 +91,15 @@ function randomize()
     $prize    = $min;
 
     //$jackpot
-    if ($onein10K == 10000) {
+    if ($onein10K == 10000 || ($charity_address && $onein10K == 0)) {
         return $max;
-    } else if ($onein10K >= 9998) {
+    } else if ($onein10K >= 9998 || ($charity_address && $onein10K <= 2)) {
         $prize = $max * 0.8;
-    } else if ($onein10K >= 9994) {
+    } else if ($onein10K >= 9994 || ($charity_address && $onein10K <= 7)) {
         $prize = $max * 0.6;
-    } else if ($onein10K >= 9986) {
+    } else if ($onein10K >= 9986 || ($charity_address && $onein10K <= 15)) {
         $prize = $max * 0.4;
-    } else if ($onein10K >= 9886) {
+    } else if ($onein10K >= 9886 || ($charity_address && $onein10K <= 115)) {
         $prize = $max * 0.2;
     }
     if ($prize < $min) {
@@ -190,7 +190,13 @@ function verifyClaimTime($wallet,$paymentID = ''){
         
 }
 
-function addPrizeToDatabase($prize,$wallet,$paymentID){
+function fetchPrizeFromDatabase($txid){
+    return DB::load('payouts',$txid);
+    
+
+}
+
+function addPrizeToDatabase($prize,$wallet,$paymentID,$charity_address = ''){
 
    
 
@@ -201,11 +207,13 @@ function addPrizeToDatabase($prize,$wallet,$paymentID){
     $payout->payment_id = $paymentID;
     $payout->timestamp = DATE("Y-m-d H:i:s");
     $payout->drawn = $prize['number'];
+    $payout->charity_address = $charity_address;
     DB::store($payout);
 
     //upate our pending table!
     DB::exec("update `wallet` set `pending` = `pending` +  " . $prize['prize']);
     
+    return $payout->id;
 }
 
 function lastPayed($limit = 5){
