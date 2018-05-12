@@ -95,14 +95,14 @@ require_once '_common.php';
                         <?php $charity_share_value = round($prize->payout_amount * 0.15, 10) ; ?>
                         Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b> 
                         and have been awarded with <strong><?php echo $prize->payout_amount; ?></strong> SpesCoin.<br/><br/>
-                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round($prize->payout_amount - $charity_share_value - 0.0001, 10); ?><br />
-                        Your Charity will recieve <?php echo $charity_share_value;?>
+                        There is a 0.0001 SpesCoin Transaction charge per payout so you will receive <?php echo round($prize->payout_amount - $charity_share_value - 0.0001, 10); ?><br />
+                        Your Charity will receive <?php echo $charity_share_value;?>
 
                         <?php else: ?>
 
                         Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b> 
                         and have been awarded with <strong><?php echo $prize->payout_amount; ?></strong> SpesCoin.<br/><br/>
-                        There is a 0.0001 SpesCoin Transaction charge per payout so you will recieve <?php echo round($prize->payout_amount - 0.0001, 10); ?><br />
+                        There is a 0.0001 SpesCoin Transaction charge per payout so you will receive <?php echo round($prize->payout_amount - 0.0001, 10); ?><br />
                     <?php endif; ?>
                         </div>
                     <?php endif; ?>
@@ -143,7 +143,7 @@ require_once '_common.php';
 
                 <p>Need A Wallet?<br /><a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">Official SpesCoin Wallet</a> </p>
 
-                    <input id="wallet" type='text' name='wallet' required placeholder='SpesCoin Wallet Recieve Address'>
+                    <input id="wallet" type='text' name='wallet' required placeholder='SpesCoin Wallet receive Address'>
 
                     <input id="paymID" type='text' name='paymentid' placeholder="Payment ID (Optional)">
                     

@@ -76,7 +76,7 @@ if($humanBalance > 1){
         }
    
         //We need to update our main balance::
-        $balance = $rpcWallet->getBalance();
+        $balance = $rpcWallet->getBalance(Config::get('rpc_wallet_address'));
         $total = $rpcWallet->bigIntToDecimal($balance['availableBalance'] + $balance['lockedAmount']);
         $humanBalance = $rpcWallet->bigIntToDecimal($balance['availableBalance']);
 
