@@ -8,7 +8,7 @@ require_once '_common.php';
     <title><?php echo $config['title']; ?></title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='shortcut icon' href='images/favicon.ico'>
-    <link rel='icon' type='image/icon' href='images/favicon.ico'>
+    <link rel='icon' type='image/icon' href='images/spes.ico'>
 
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
     <link rel='stylesheet' href='/css/style.css'>
@@ -45,7 +45,7 @@ require_once '_common.php';
         <h3><a href='./'><img src='<?php echo $config['logo']; ?>' ></a><br/><br/> <?php echo $config['subtitle']; ?></h3>
 
     <p style="margin-top:10px;"><a href="http://myspes.org/" target="_blank">SpesCoin Information</a> | <a href="https://github.com/SpesCoin/SpesCoin-GUI-Wallet/releases" target="_blank">SpesCoin Wallet</a> | <a target="_blank" href="https://cryptohub.online/?ref=22726">Exchange</a> </p>
-        <?php 
+        <?php
             $exch_rate = getCurrentExchangeRate();
             if($exch_rate): ?>
                 <h3><center><strong>1 SPES = <?php echo $exch_rate;?> BTC</h3>
@@ -56,7 +56,7 @@ require_once '_common.php';
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
             <center>
             <?php echo $earning_ads[0]; ?>
-           
+
             </center><br />
 
             <!-- ADS ADS ADS ADS ADS ADS ADS ADS ADS -->
@@ -81,8 +81,8 @@ require_once '_common.php';
                         </div>
                     <?php } else if ($message == 'success') {?>
 
-                        
-                        <?php $prize = fetchPrizeFromDatabase(filter_input(INPUT_GET, 'tx')); 
+
+                        <?php $prize = fetchPrizeFromDatabase(filter_input(INPUT_GET, 'tx'));
                         if(!$prize): ?>
                         <div class='alert alert-error radius'>
     Error Validating Prize.
@@ -93,20 +93,20 @@ require_once '_common.php';
 
                         <?php if($prize->charity_address): ?>
                         <?php $charity_share_value = round($prize->payout_amount * 0.15, 10) ; ?>
-                        Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b> 
+                        Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b>
                         and have been awarded with <strong><?php echo $prize->payout_amount; ?></strong> SpesCoin.<br/><br/>
                         There is a 0.0001 SpesCoin Transaction charge per payout so you will receive <?php echo round($prize->payout_amount - $charity_share_value - 0.0001, 10); ?><br />
                         Your Charity will receive <?php echo $charity_share_value;?>
 
                         <?php else: ?>
 
-                        Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b> 
+                        Congratulations!!! - You spun <b><?php echo $prize->drawn; ?></b>
                         and have been awarded with <strong><?php echo $prize->payout_amount; ?></strong> SpesCoin.<br/><br/>
                         There is a 0.0001 SpesCoin Transaction charge per payout so you will receive <?php echo round($prize->payout_amount - 0.0001, 10); ?><br />
                     <?php endif; ?>
                         </div>
                     <?php endif; ?>
-                        
+
                     <?php } else if ($message == 'paymentID') {?>
 
                         <div id='alert' class='alert alert-error radius'>
@@ -146,7 +146,7 @@ require_once '_common.php';
                     <input id="wallet" type='text' name='wallet' required placeholder='SpesCoin Wallet receive Address'>
 
                     <input id="paymID" type='text' name='paymentid' placeholder="Payment ID (Optional)">
-                    
+
                     <p>Donate 15% of winnings to charity & double your chance of higher winnings</p>
 
                     <select name="charity" id="charitydonation">
@@ -417,16 +417,16 @@ require_once '_common.php';
 <script>
 
 
-var counter = 15; 
+var counter = 15;
 var interval = setInterval(function() {
-        counter--; 
-        $("#submt").prop('value', 'Claim Your Spes in '+counter+' seconds'); 
+        counter--;
+        $("#submt").prop('value', 'Claim Your Spes in '+counter+' seconds');
         if (counter <= 0) {
-            clearInterval(interval); 
-            $("#submt").prop('value', 'Claim Your SpesCoin'); 
-            } }, 1000); 
+            clearInterval(interval);
+            $("#submt").prop('value', 'Claim Your SpesCoin');
+            } }, 1000);
 
-$('#human_verification').on('focus', function(e) { 
+$('#human_verification').on('focus', function(e) {
     $('#submt').attr('disabled',false);
 
 });
@@ -449,8 +449,13 @@ if (typeof(Storage) !== "undefined") {
     $('#paymID').on("change", function(e) {
         localStorage.setItem("paymID", $(this).val());
     });
+	$('#charitydonation').on("change", function(e){
+		localStorage.setItem("charitydonation", $(this).val());
+	})
+
     $('#wallet').val(localStorage.getItem("wallet"));
     $('#paymID').val(localStorage.getItem("paymID"));
+	$('#charitydonation').val(localStorage.getItem("charitydonation"));
 }else{
     console.log("no Storage");
 }
