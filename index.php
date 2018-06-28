@@ -455,7 +455,7 @@ if (typeof(Storage) !== "undefined") {
 
     $('#wallet').val(localStorage.getItem("wallet"));
     $('#paymID').val(localStorage.getItem("paymID"));
-	$('#charitydonation').val(localStorage.getItem("charitydonation"));
+	$('#charitydonation').val(localStorage.getItem("charitydonation")).trigger('change');
 }else{
     console.log("no Storage");
 }
